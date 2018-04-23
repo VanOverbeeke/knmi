@@ -10,8 +10,9 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\Query;
+use app\models\Custom;
 
-class SiteController extends Controller
+class QueryController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -60,30 +61,48 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($model)
     {
-        return $this->render('index');
+        return $this->render('index', ['model' => $model]);
     }
-    
+
+    /**
+     * Displays query form page.
+     *
+     * @return string
+     */
+    public function actionCreate()
+    {
+        $model = new Query();
+        $vars = ['TG' => 'Temp G', 'TN' => 'Temp N', 'TX' => 'Temp X', 'T10N' => 'Temp10'];
+        $stns = ['260' => 'De Bilt', '280' => 'Stad X'];
+
+        return $this->render('create', ['model' => $model, 'vars' => $vars, 'stns' => $stns]);
+    }
     
     /**
      * Displays query form page.
      *
      * @return string
      */
-    public function actionCreateQuery()
+    public function actionStoreQuery()
     {
-        return $this->render('create-query');
-
         $model = new Query();
-        $input = Yii::$app->request->post();
-        if ($model->load($input) && $model->validate()) {
-            $model->store();
-            
-            return $this->render('store-query-confirm', ['model' =>$model]);
-        } else {
-            return $this->render('create-query');
+        if (isset(Yii::$app->request->post()['Query'])) {
+            $input = Yii::$app->request->post()['Query'];
+            $input['start'] = Custom::dateFormat($input['start']);
+            $input['end'] = Custom::dateFormat($input['end']);
+            $input['vars'] = ($input['vars']) ? implode(':', $input['vars']) : '';
+            $input['stns'] = ($input['stns']) ? implode(':', $input['stns']) : '';
+            $model->attributes = $input;
+            if ($model->validate()) {
+                $model->store();
+
+                return $this->actionIndex($model);
+            }
         }
+
+        return $this->actionCreate();
     }
 
     /**
