@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -37,6 +38,10 @@ class QueryController extends Controller
                     'logout' => ['post'],
                 ],
             ],
+//            'value' => function($event) {
+//            $format = "Y/m/d";
+//            return date()
+//            }
         ];
     }
 
@@ -61,9 +66,23 @@ class QueryController extends Controller
      *
      * @return string
      */
-    public function actionIndex($model)
+    public function actionIndex()
     {
-        return $this->render('index', ['model' => $model]);
+        $query = new Query();
+        $query->start = date('1989-08-20');
+        $query->end = date('1990-09-21');
+        $query->inseason = 1;
+        $query->vars = 'TX';
+        $query->stns = '260';
+        $query->save();
+        $query->done = 1;
+        $query->save();
+//        $query = Query::findAll(['inseason' => null]);
+
+
+        return $this->render('index', [
+            'query' => $query,
+        ]);
     }
 
     /**
@@ -74,10 +93,8 @@ class QueryController extends Controller
     public function actionCreate()
     {
         $model = new Query();
-        $vars = ['TG' => 'Temp G', 'TN' => 'Temp N', 'TX' => 'Temp X', 'T10N' => 'Temp10'];
-        $stns = ['260' => 'De Bilt', '280' => 'Stad X'];
 
-        return $this->render('create', ['model' => $model, 'vars' => $vars, 'stns' => $stns]);
+        return $this->render('create', ['model' => $model]);
     }
     
     /**

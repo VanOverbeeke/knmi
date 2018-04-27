@@ -21,7 +21,7 @@ $this->title = 'My Yii Application';
                 <h2>Times</h2>
 
                 <p>
-                    <?php echo $models->start; ?>
+                    <?php echo $query->start; ?>
                 </p>
 
                 <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
