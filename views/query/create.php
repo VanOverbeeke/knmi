@@ -53,6 +53,6 @@ $this->title = 'KNMI Aanvraag';
                 </p>
             </div>
         </div>
-        <?php ActiveForm::end(); ?></p>
+        <?php ActiveForm::end(); ?>
     </div>
 </div>

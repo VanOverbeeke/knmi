@@ -68,21 +68,9 @@ class QueryController extends Controller
      */
     public function actionIndex()
     {
-        $query = new Query();
-        $query->start = date('1989-08-20');
-        $query->end = date('1990-09-21');
-        $query->inseason = 1;
-        $query->vars = 'TX';
-        $query->stns = '260';
-        $query->save();
-        $query->done = 1;
-        $query->save();
-//        $query = Query::findAll(['inseason' => null]);
+        $queries = Query::find()->all();
 
-
-        return $this->render('index', [
-            'query' => $query,
-        ]);
+        return $this->render('index', compact('queries'));
     }
 
     /**
@@ -102,7 +90,7 @@ class QueryController extends Controller
      *
      * @return string
      */
-    public function actionStoreQuery()
+    public function actionSendQuery()
     {
         $model = new Query();
         if (isset(Yii::$app->request->post()['Query'])) {
@@ -112,6 +100,7 @@ class QueryController extends Controller
             $input['vars'] = ($input['vars']) ? implode(':', $input['vars']) : '';
             $input['stns'] = ($input['stns']) ? implode(':', $input['stns']) : '';
             $model->attributes = $input;
+            dd($model);
             if ($model->validate()) {
                 $model->store();
 

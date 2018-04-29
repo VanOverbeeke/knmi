@@ -6,12 +6,12 @@ use yii\db\ActiveRecord;
 
 class Query extends ActiveRecord
 {
-	public $start;
-	public $end;
-	public $inseason;
-	public $vars;
+//	public $start;
+//	public $end;
+//	public $inseason;
+//	public $vars;
 	public $stns;
-	public $done;
+//	public $done;
 
     /**
      * @return string the name of the table associated with this ActiveRecord class.
@@ -34,10 +34,18 @@ class Query extends ActiveRecord
 	}
 
 	public function getVars() {
-	    return ['TG' => 'Temp G', 'TN' => 'Temp N', 'TX' => 'Temp X', 'T10N' => 'Temp10'];
+	    return [
+	        'T' => 'Temperatuur',
+            'DR' => 'Neerslag',
+            'DDVEC' => 'Windrichting'
+        ];
     }
 
     public function getStns() {
-        return ['260' => 'De Bilt', '280' => 'Stad X'];
+        return [
+            '240' => 'Schiphol',
+            '260' => 'De Bilt',
+            '380' => 'Maastricht'
+        ];
     }
 }
