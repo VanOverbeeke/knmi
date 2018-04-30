@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use GuzzleHttp\Client;
+use SebastianBergmann\Timer\Timer;
 use Yii;
 use yii\data\Pagination;
 use yii\filters\AccessControl;
@@ -80,35 +82,74 @@ class QueryController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Query();
+        $new = Yii::$app->request->post();
+        $query = new Query;
 
-        return $this->render('create', ['model' => $model]);
-    }
-    
-    /**
-     * Displays query form page.
-     *
-     * @return string
-     */
-    public function actionSendQuery()
-    {
-        $model = new Query();
         if (isset(Yii::$app->request->post()['Query'])) {
             $input = Yii::$app->request->post()['Query'];
             $input['start'] = Custom::dateFormat($input['start']);
             $input['end'] = Custom::dateFormat($input['end']);
-            $input['vars'] = ($input['vars']) ? implode(':', $input['vars']) : '';
-            $input['stns'] = ($input['stns']) ? implode(':', $input['stns']) : '';
-            $model->attributes = $input;
-            dd($model);
-            if ($model->validate()) {
-                $model->store();
 
-                return $this->actionIndex($model);
+            $query->attributes = $input;
+            $queryString = $this->createQueryString($input);
+            var_dump($queryString);
+
+            die();
+            return $this->render('submit', ['queryString' => $queryString]);
+        }
+
+        return $this->render('create', ['query' => $query]);
+    }
+
+    /**
+     * @param array $input
+     * @return string
+     */
+    public function createQueryString(array $input)
+    {
+        $input['vars'] = ($input['vars']) ? implode(':', $input['vars']) : '';
+        $input['stns'] = ($input['stns']) ? implode(':', $input['stns']) : '';
+        $postDataComponents = [];
+
+        foreach (['stns', 'vars', 'start', 'end', 'inseason'] as $var) {
+            if (isset($input[$var])) {
+                array_push($postDataComponents, $var . '=' . $input[$var]);
             }
         }
 
-        return $this->actionCreate();
+        $command = 'wget';
+        $postData = implode('&', $postDataComponents);
+        $targetScript = 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi';
+
+        return implode(' ', [$command, $postData, $targetScript]);
+    }
+
+    public function actionSubmit()
+    {
+        $query = new Query;
+        $query->vars = 'T';
+        $query->stns = '260';
+
+        $timestamp = date('YmdHis');
+        $outputFile = '/home/lennert/projects/knmi/output/' . $timestamp . '.csv';
+
+        $client = new Client([
+            'base_uri' => 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi',
+        ]);
+        $response = $client->post(
+            '', [
+            'form_params' => [
+                'stns' => '260',
+                'vars' => 'T'
+            ],
+            'sink' => $outputFile,
+        ]);
+        var_dump('<pre>');
+        var_dump($response);
+        var_dump('</pre>');
+        die();
+
+        return $this->render('submit', compact('queryString'));
     }
 
     /**

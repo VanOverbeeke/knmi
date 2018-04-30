@@ -1,0 +1,72 @@
+# BRON: KONINKLIJK NEDERLANDS METEOROLOGISCH INSTITUUT (KNMI)
+# Opmerking: door stationsverplaatsingen en veranderingen in waarneemmethodieken zijn deze tijdreeksen van dagwaarden mogelijk inhomogeen! Dat betekent dat deze reeks van gemeten waarden niet geschikt is voor trendanalyse. Voor studies naar klimaatverandering verwijzen we naar de gehomogeniseerde reeks maandtemperaturen van De Bilt <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/gehomogeniseerde-reeks-maandtemperaturen-de-bilt> of de Centraal Nederland Temperatuur <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/centraal-nederland-temperatuur-cnt>.
+# 
+# 
+# STN      LON(east)   LAT(north)     ALT(m)  NAME
+# 260:         5.180       52.099       0.19  De Bilt
+# 
+# YYYYMMDD = Date (YYYY=year MM=month DD=day); 
+# T        = 
+# 
+# STN,YYYYMMDD,    T
+# 
+  260,20180301,  260
+  260,20180302,  260
+  260,20180303,  260
+  260,20180304,  260
+  260,20180305,  260
+  260,20180306,  260
+  260,20180307,  260
+  260,20180308,  260
+  260,20180309,  260
+  260,20180310,  260
+  260,20180311,  260
+  260,20180312,  260
+  260,20180313,  260
+  260,20180314,  260
+  260,20180315,  260
+  260,20180316,  260
+  260,20180317,  260
+  260,20180318,  260
+  260,20180319,  260
+  260,20180320,  260
+  260,20180321,  260
+  260,20180322,  260
+  260,20180323,  260
+  260,20180324,  260
+  260,20180325,  260
+  260,20180326,  260
+  260,20180327,  260
+  260,20180328,  260
+  260,20180329,  260
+  260,20180330,  260
+  260,20180331,  260
+  260,20180401,  260
+  260,20180402,  260
+  260,20180403,  260
+  260,20180404,  260
+  260,20180405,  260
+  260,20180406,  260
+  260,20180407,  260
+  260,20180408,  260
+  260,20180409,  260
+  260,20180410,  260
+  260,20180411,  260
+  260,20180412,  260
+  260,20180413,  260
+  260,20180414,  260
+  260,20180415,  260
+  260,20180416,  260
+  260,20180417,  260
+  260,20180418,  260
+  260,20180419,  260
+  260,20180420,  260
+  260,20180421,  260
+  260,20180422,  260
+  260,20180423,  260
+  260,20180424,  260
+  260,20180425,  260
+  260,20180426,  260
+  260,20180427,  260
+  260,20180428,  260
+  260,20180429,  260

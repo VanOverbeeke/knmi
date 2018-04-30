@@ -17,25 +17,18 @@ $this->title = 'KNMI Aanvraag';
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
             <div class="col-lg-4">
-                <h2>Periode</h2>
+                <h2>Query String</h2>
 
                 <p>
-                    <label>Begindatum</label>
-                    <?= $form->field($query, 'start')->textInput(); ?>
-                    <label>Einddatum</label>
-                    <?= $form->field($query, 'end')->textInput(); ?>
-                    <label>Seizoen?</label>
-                    <?= $form->field($query, 'inseason')->checkbox([
-                        'label'=>'',
-                    ]);
-                    ?>
+                    <label>Query</label>
+                    <?= $form->field('queryString', $queryString)->textInput(); ?>
                 </p>
             </div>
             <div class="col-lg-4">
                 <h2>Datatypen</h2>
 
                 <p>
-                    <?php echo $form->field($query, 'vars')->checkboxList(\app\models\Query::getVars()); ?>
+                    x
                 </p>
 
             </div>
@@ -43,7 +36,7 @@ $this->title = 'KNMI Aanvraag';
                 <h2>Stations</h2>
 
                 <p>
-                    <?php echo $form->field($query, 'stns')->checkboxList(\app\models\Query::getStns()); ?>
+                    x
                 </p>
 
                 <p>

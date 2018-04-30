@@ -6,12 +6,12 @@ use yii\db\ActiveRecord;
 
 class Query extends ActiveRecord
 {
-//	public $start;
-//	public $end;
-//	public $inseason;
-//	public $vars;
+	public $start;
+	public $end;
+	public $inseason;
+	public $vars;
 	public $stns;
-//	public $done;
+	public $done;
 
     /**
      * @return string the name of the table associated with this ActiveRecord class.
@@ -29,6 +29,7 @@ class Query extends ActiveRecord
 			[['inseason'], 'boolean'],
 			[['vars'], 'string'],
 			[['stns'], 'string'],
+			[['done'], 'boolean'],
 			[['start', 'end', 'inseason', 'vars', 'stns', 'done'], 'safe'],
 		];
 	}
