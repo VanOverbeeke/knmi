@@ -3,6 +3,10 @@
 <head>
     <script>
         window.onload = function () {
+            var data = <?php echo json_encode($data, JSON_NUMERIC_CHECK); ?>;
+            data.forEach(function(datum, index, data) {
+                data[index]["x"] = new Date(data[index]["x"]);
+            });
             var chart = new CanvasJS.Chart("chartContainer", {
                 animationEnabled: true,
                 title:{
@@ -19,13 +23,13 @@
                 },
                 data: [{
                     yValueFormatString: "#,# graden",
-                    xValueFormatString: "YYYY",
+                    xValueFormatString: "YYYYMMDD",
+                    xValueType: "time",
                     type: "spline",
-                    dataPoints: <?php echo json_encode($data, JSON_NUMERIC_CHECK); ?>
+                    dataPoints: data
                 }]
             });
             chart.render();
-
         }
     </script>
 </head>

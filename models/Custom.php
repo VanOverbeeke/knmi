@@ -10,6 +10,7 @@ class Custom
     const DATETIME_FORMAT = 'php:Y-m-d H:i:s';
     const TIME_FORMAT = 'php:H:i:s';
     const KNMI_FORMAT = 'php:YYYYMMDD';
+    const JS_FORMAT = 'YYYY-MM-DD';
 
     public static function dateFormat($dateStr, $type='date', $format = null) {
         if ($type === 'datetime') {

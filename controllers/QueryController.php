@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -131,7 +132,7 @@ class QueryController extends Controller
         while (($line = fgetcsv($handle)) !== false) {
             if ( count($line) === 3 && (substr($line[0], 0, 1) !== '#')) {
                 $datum = [
-                    'x' => $line[1],
+                    'x' => strtotime($line[1]) * 1000,
                     'y' => preg_replace('/\s+/', '', $line[2])
                 ];
                 $data[] = $datum;
