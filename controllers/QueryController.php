@@ -2,6 +2,9 @@
 
 namespace app\controllers;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -10,8 +13,9 @@ use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\Query;
+use app\models\Custom;
 
-class SiteController extends Controller
+class QueryController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -36,6 +40,10 @@ class SiteController extends Controller
                     'logout' => ['post'],
                 ],
             ],
+//            'value' => function($event) {
+//            $format = "Y/m/d";
+//            return date()
+//            }
         ];
     }
 
@@ -64,26 +72,74 @@ class SiteController extends Controller
     {
         return $this->render('index');
     }
-    
-    
+
     /**
      * Displays query form page.
      *
      * @return string
      */
-    public function actionCreateQuery()
+    public function actionCreate()
     {
-        return $this->render('create-query');
+        $query = new Query;
 
-        $model = new Query();
-        $input = Yii::$app->request->post();
-        if ($model->load($input) && $model->validate()) {
-            $model->store();
-            
-            return $this->render('store-query-confirm', ['model' =>$model]);
-        } else {
-            return $this->render('create-query');
+        if (isset(Yii::$app->request->post()['Query'])) {
+            $requestData = Yii::$app->request->post()['Query'];
+            $requestData['start'] = Custom::dateFormat($requestData['start'], 'KNMI_FORMAT');
+            $requestData['end'] = Custom::dateFormat($requestData['end'], 'KNMI_FORMAT');
+            $requestData['vars'] = join(':', $requestData['vars']);
+            $requestData['stns'] = join(':', $requestData['stns']);
+
+            return $this->actionSubmit($requestData);
         }
+
+        return $this->render('create', ['query' => $query]);
+    }
+
+    public function actionSubmit(array $requestData)
+    {
+        $url = 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi';
+        $timestamp = date('YmdHis');
+        $outputFile = '/home/lennert/projects/knmi/output/' . $timestamp . '.csv';
+        $client = new Client();
+
+        try {
+            $response = $client->post(
+                $url,
+                [
+                    'form_params' => $requestData,
+                    'sink' => $outputFile,
+                ]
+            );
+
+            return $this->actionLoading($outputFile);
+        } catch (RequestException $e) {
+            echo $e->getRequest();
+            if ($e->hasResponse()) {
+                echo $e->getResponse();
+            }
+        }
+    }
+
+    public function actionLoading($outputFile)
+    {
+        return $this->render('loading', compact('outputFile'));
+    }
+
+    public function actionResult($outputFile)
+    {
+        $handle = fopen($outputFile, 'r');
+        $data = [];
+        while (($line = fgetcsv($handle)) !== false) {
+            if ( count($line) === 3 && (substr($line[0], 0, 1) !== '#')) {
+                $datum = [
+                    'x' => strtotime($line[1]) * 1000,
+                    'y' => preg_replace('/\s+/', '', $line[2])
+                ];
+                $data[] = $datum;
+            }
+        }
+
+        return $this->render('result', compact('data'));
     }
 
     /**
