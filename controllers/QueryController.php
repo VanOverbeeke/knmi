@@ -84,8 +84,8 @@ class QueryController extends Controller
 
         if (isset(Yii::$app->request->post()['Query'])) {
             $requestData = Yii::$app->request->post()['Query'];
-            $requestData['start'] = Custom::dateFormat($requestData['start'], 'KNMI_FORMAT');
-            $requestData['end'] = Custom::dateFormat($requestData['end'], 'KNMI_FORMAT');
+            $requestData['start'] = Custom::dateFormat($requestData['start'], 'knmi');
+            $requestData['end'] = Custom::dateFormat($requestData['end'], 'knmi');
             $requestData['vars'] = join(':', $requestData['vars']);
             $requestData['stns'] = join(':', $requestData['stns']);
 
