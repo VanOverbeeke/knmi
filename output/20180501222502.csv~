@@ -1,0 +1,73 @@
+# BRON: KONINKLIJK NEDERLANDS METEOROLOGISCH INSTITUUT (KNMI)
+# Opmerking: door stationsverplaatsingen en veranderingen in waarneemmethodieken zijn deze tijdreeksen van dagwaarden mogelijk inhomogeen! Dat betekent dat deze reeks van gemeten waarden niet geschikt is voor trendanalyse. Voor studies naar klimaatverandering verwijzen we naar de gehomogeniseerde reeks maandtemperaturen van De Bilt <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/gehomogeniseerde-reeks-maandtemperaturen-de-bilt> of de Centraal Nederland Temperatuur <http://www.knmi.nl/kennis-en-datacentrum/achtergrond/centraal-nederland-temperatuur-cnt>.
+# 
+# 
+# STN      LON(east)   LAT(north)     ALT(m)  NAME
+# 260:         5.180       52.100       1.90  DE BILT
+# 
+# YYYYMMDD = Date (YYYY=year MM=month DD=day); 
+# TG       = Daily mean temperature in (0.1 degrees Celsius); 
+# 
+# STN,YYYYMMDD,   TG
+# 
+  260,20180301,  -47
+  260,20180302,  -37
+  260,20180303,  -17
+  260,20180304,   50
+  260,20180305,   66
+  260,20180306,   56
+  260,20180307,   59
+  260,20180308,   48
+  260,20180309,   65
+  260,20180310,  114
+  260,20180311,  102
+  260,20180312,  103
+  260,20180313,   56
+  260,20180314,   58
+  260,20180315,   73
+  260,20180316,   38
+  260,20180317,  -14
+  260,20180318,  -10
+  260,20180319,   -2
+  260,20180320,   38
+  260,20180321,   36
+  260,20180322,   64
+  260,20180323,   62
+  260,20180324,   65
+  260,20180325,   54
+  260,20180326,   47
+  260,20180327,   56
+  260,20180328,   59
+  260,20180329,   65
+  260,20180330,   90
+  260,20180331,   72
+  260,20180401,   48
+  260,20180402,   77
+  260,20180403,  127
+  260,20180404,  103
+  260,20180405,   59
+  260,20180406,   88
+  260,20180407,  139
+  260,20180408,  152
+  260,20180409,  126
+  260,20180410,  155
+  260,20180411,  127
+  260,20180412,  104
+  260,20180413,  100
+  260,20180414,  115
+  260,20180415,  127
+  260,20180416,  114
+  260,20180417,  128
+  260,20180418,  163
+  260,20180419,  192
+  260,20180420,  183
+  260,20180421,  155
+  260,20180422,  179
+  260,20180423,  131
+  260,20180424,  129
+  260,20180425,  115
+  260,20180426,  103
+  260,20180427,  103
+  260,20180428,  117
+  260,20180429,   92
+  260,20180430,   95

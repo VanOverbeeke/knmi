@@ -3,9 +3,8 @@
 namespace app\controllers;
 
 use GuzzleHttp\Client;
-use SebastianBergmann\Timer\Timer;
+use GuzzleHttp\Exception\RequestException;
 use Yii;
-use yii\data\Pagination;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -70,9 +69,7 @@ class QueryController extends Controller
      */
     public function actionIndex()
     {
-        $queries = Query::find()->all();
-
-        return $this->render('index', compact('queries'));
+        return $this->render('index');
     }
 
     /**
@@ -82,74 +79,66 @@ class QueryController extends Controller
      */
     public function actionCreate()
     {
-        $new = Yii::$app->request->post();
         $query = new Query;
 
         if (isset(Yii::$app->request->post()['Query'])) {
-            $input = Yii::$app->request->post()['Query'];
-            $input['start'] = Custom::dateFormat($input['start']);
-            $input['end'] = Custom::dateFormat($input['end']);
+            $requestData = Yii::$app->request->post()['Query'];
+            $requestData['start'] = Custom::dateFormat($requestData['start'], 'KNMI_FORMAT');
+            $requestData['end'] = Custom::dateFormat($requestData['end'], 'KNMI_FORMAT');
+            $requestData['vars'] = join(':', $requestData['vars']);
+            $requestData['stns'] = join(':', $requestData['stns']);
 
-            $query->attributes = $input;
-            $queryString = $this->createQueryString($input);
-            var_dump($queryString);
-
-            die();
-            return $this->render('submit', ['queryString' => $queryString]);
+            return $this->actionSubmit($requestData);
         }
 
         return $this->render('create', ['query' => $query]);
     }
 
-    /**
-     * @param array $input
-     * @return string
-     */
-    public function createQueryString(array $input)
+    public function actionSubmit(array $requestData)
     {
-        $input['vars'] = ($input['vars']) ? implode(':', $input['vars']) : '';
-        $input['stns'] = ($input['stns']) ? implode(':', $input['stns']) : '';
-        $postDataComponents = [];
+        $url = 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi';
+        $timestamp = date('YmdHis');
+        $outputFile = '/home/lennert/projects/knmi/output/' . $timestamp . '.csv';
+        $client = new Client();
 
-        foreach (['stns', 'vars', 'start', 'end', 'inseason'] as $var) {
-            if (isset($input[$var])) {
-                array_push($postDataComponents, $var . '=' . $input[$var]);
+        try {
+            $response = $client->post(
+                $url,
+                [
+                    'form_params' => $requestData,
+                    'sink' => $outputFile,
+                ]
+            );
+
+            return $this->actionLoading($outputFile);
+        } catch (RequestException $e) {
+            echo $e->getRequest();
+            if ($e->hasResponse()) {
+                echo $e->getResponse();
+            }
+        }
+    }
+
+    public function actionLoading($outputFile)
+    {
+        return $this->render('loading', compact('outputFile'));
+    }
+
+    public function actionResult($outputFile)
+    {
+        $handle = fopen($outputFile, 'r');
+        $data = [];
+        while (($line = fgetcsv($handle)) !== false) {
+            if ( count($line) === 3 && (substr($line[0], 0, 1) !== '#')) {
+                $datum = [
+                    'x' => $line[1],
+                    'y' => preg_replace('/\s+/', '', $line[2])
+                ];
+                $data[] = $datum;
             }
         }
 
-        $command = 'wget';
-        $postData = implode('&', $postDataComponents);
-        $targetScript = 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi';
-
-        return implode(' ', [$command, $postData, $targetScript]);
-    }
-
-    public function actionSubmit()
-    {
-        $query = new Query;
-        $query->vars = 'T';
-        $query->stns = '260';
-
-        $timestamp = date('YmdHis');
-        $outputFile = '/home/lennert/projects/knmi/output/' . $timestamp . '.csv';
-
-        $client = new Client([
-            'base_uri' => 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi',
-        ]);
-        $response = $client->post(
-            '', [
-            'form_params' => [
-                'stns' => '260',
-                'vars' => 'T'
-            ],
-            'sink' => $outputFile,
-        ]);
-        var_dump('<pre>');
-        var_dump($response);
-        var_dump('</pre>');
-        die();
-
-        return $this->render('submit', compact('queryString'));
+        return $this->render('result', compact('data'));
     }
 
     /**

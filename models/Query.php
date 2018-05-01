@@ -36,7 +36,7 @@ class Query extends ActiveRecord
 
 	public function getVars() {
 	    return [
-	        'T' => 'Temperatuur',
+	        'TG' => 'Temperatuur',
             'DR' => 'Neerslag',
             'DDVEC' => 'Windrichting'
         ];
