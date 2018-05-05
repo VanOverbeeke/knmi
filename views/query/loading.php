@@ -14,7 +14,7 @@ $this->title = 'In behandeling';
     </div>
 
     <div class="body-content">
-        <?= Html::beginForm(['query/result', 'outputFile' => $outputFile], 'get'); ?>
+        <?= Html::beginForm(['query/result', 'timestamp' => $timestamp], 'get'); ?>
         <div class="row">
             <div class="col-lg-4">
             </div>
@@ -22,7 +22,6 @@ $this->title = 'In behandeling';
                 <h2 id="title">Wachten op KNMI...</h2>
 
                 <p>
-                <?= $outputFile; ?>
                 <div class="form-group">
                     <?= Html::submitButton('Doorgaan', ['class' => 'btn btn-primary', 'id' => 'continue', 'disabled' => 'disabled']) ?>
                 </div>

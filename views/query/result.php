@@ -3,7 +3,7 @@
 <head>
     <script>
         window.onload = function () {
-            var data = <?php echo json_encode($data, JSON_NUMERIC_CHECK); ?>;
+            var data = <?php echo json_encode($csvData, JSON_NUMERIC_CHECK); ?>;
             data.forEach(function(datum, index, data) {
                 data[index]["x"] = new Date(data[index]["x"]);
             });

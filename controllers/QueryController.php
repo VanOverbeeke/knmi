@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\widgets\XlsxHelper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use yii\filters\AccessControl;
@@ -14,53 +16,29 @@ use app\models\LoginForm;
 use app\models\ContactForm;
 use app\models\Query;
 use app\models\Custom;
+use PhpOffice\PhpSpreadsheet\Helper\Sample;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class QueryController extends Controller
 {
     /**
-     * {@inheritdoc}
+     * Return a file name based on timestamp and output format
+     *
+     * @param $timestamp
+     * @param string $type
+     * @return string
      */
-    public function behaviors()
+    public function getFileName($timestamp, $type = 'csv')
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
-                'rules' => [
-                    [
-                        'actions' => ['logout'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-//            'value' => function($event) {
-//            $format = "Y/m/d";
-//            return date()
-//            }
-        ];
-    }
+        if ($type === 'xlsx') {
+            $outputDir = '../output';
 
-    /**
-     * {@inheritdoc}
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
-        ];
+            return $outputDir . $timestamp . '.xlsx';
+        }
+        $outputDir = '/home/lennert/projects/knmi/output/';
+
+        return $outputDir . $timestamp . '.csv';
     }
 
     /**
@@ -99,7 +77,7 @@ class QueryController extends Controller
     {
         $url = 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi';
         $timestamp = date('YmdHis');
-        $outputFile = '/home/lennert/projects/knmi/output/' . $timestamp . '.csv';
+        $outputFile = $this->getFileName($timestamp);
         $client = new Client();
 
         try {
@@ -111,7 +89,7 @@ class QueryController extends Controller
                 ]
             );
 
-            return $this->actionLoading($outputFile);
+            return $this->actionLoading($timestamp);
         } catch (RequestException $e) {
             echo $e->getRequest();
             if ($e->hasResponse()) {
@@ -120,87 +98,39 @@ class QueryController extends Controller
         }
     }
 
-    public function actionLoading($outputFile)
+    public function actionLoading($timestamp)
     {
-        return $this->render('loading', compact('outputFile'));
+        $outputfile = $this->getFileName($timestamp);
+
+        return $this->render('loading', compact('timestamp', 'outputFile'));
     }
 
-    public function actionResult($outputFile)
+    public function actionResult($timestamp)
     {
-        $handle = fopen($outputFile, 'r');
-        $data = [];
+        $inputFile = $this->getFileName($timestamp);
+        $handle = fopen($inputFile, 'r');
+
+        $csvData = [];
+        $xlsxData = [];
         while (($line = fgetcsv($handle)) !== false) {
-            if ( count($line) === 3 && (substr($line[0], 0, 1) !== '#')) {
-                $datum = [
-                    'x' => strtotime($line[1]) * 1000,
-                    'y' => preg_replace('/\s+/', '', $line[2])
+            if (count($line) === 3 && (substr($line[0], 0, 1) !== '#')) {
+                $xlsxDateTime = $line[1];
+                $csvDateTime = strtotime($line[1]) * 1000;
+                $temp = preg_replace('/\s+/', '', $line[2]);
+                $csvData[] = [
+                    'x' => $csvDateTime,
+                    'y' => $temp
                 ];
-                $data[] = $datum;
+                $xlsxData[] = [
+                    $xlsxDateTime,
+                    $temp
+                ];
             }
         }
 
-        return $this->render('result', compact('data'));
-    }
+        $outputFileName = '../output/' . $timestamp . '.xlsx';
+        (new XlsxHelper())->create($outputFileName, $xlsxData);
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
-        }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
+        return $this->render('result', compact('csvData'));
     }
 }
