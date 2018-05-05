@@ -42,6 +42,14 @@ class Query extends ActiveRecord
         ];
     }
 
+    public function  getVarLabels() {
+        return [
+            'TG' => '0.1 Celsius',
+            'DR' => '0.1 uur per dag',
+            'DDVEC' => 'Windrichting in kompasgraden'
+        ];
+    }
+
     public function getStns() {
         return [
             '240' => 'Schiphol',
