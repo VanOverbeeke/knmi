@@ -10,16 +10,12 @@
             var chart = new CanvasJS.Chart("chartContainer", {
                 animationEnabled: true,
                 title:{
-                    text: "Temperatuur"
+                    text: '<?php echo \app\models\Query::getVars()[$request['vars']] ?>'
                 },
                 axisY: {
                     title: "0.1 Celsius",
                     valueFormatString: "#0.",
-                    suffix: "",
-                    stripLines: [{
-                        value: 0,
-                        label: "Vriespunt"
-                    }]
+                    suffix: ""
                 },
                 data: [{
                     yValueFormatString: "#,# graden",

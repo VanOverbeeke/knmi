@@ -35,7 +35,7 @@ $this->title = 'KNMI Aanvraag';
                 <h2>Datatypen</h2>
 
                 <p>
-                    <?php echo $form->field($query, 'vars')->checkboxList(\app\models\Query::getVars()); ?>
+                    <?php echo $form->field($query, 'vars')->radioList(\app\models\Query::getVars()); ?>
                 </p>
 
             </div>
@@ -43,7 +43,7 @@ $this->title = 'KNMI Aanvraag';
                 <h2>Stations</h2>
 
                 <p>
-                    <?php echo $form->field($query, 'stns')->checkboxList(\app\models\Query::getStns()); ?>
+                    <?php echo $form->field($query, 'stns')->radioList(\app\models\Query::getStns()); ?>
                 </p>
 
                 <p>

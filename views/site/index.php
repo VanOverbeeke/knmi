@@ -23,7 +23,7 @@ $this->title = 'My Yii Application';
                 <p>
                     <?= Html::beginForm('query/create', 'post'); ?>
                 <div class="form-group">
-                    <?= Html::submitButton('Nieuwe aanvraag', ['class' => 'btn btn-primary']) ?>
+                    <?= Html::submitButton('Nieuwe opdracht', ['class' => 'btn btn-primary']) ?>
                 </div>
                 </p>
                     <?= Html::endForm(); ?>

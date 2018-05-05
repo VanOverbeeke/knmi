@@ -14,7 +14,7 @@ $this->title = 'In behandeling';
     </div>
 
     <div class="body-content">
-        <?= Html::beginForm(['query/result', 'timestamp' => $timestamp], 'get'); ?>
+        <?= Html::beginForm(['query/result', 'request' => $request], 'post'); ?>
         <div class="row">
             <div class="col-lg-4">
             </div>

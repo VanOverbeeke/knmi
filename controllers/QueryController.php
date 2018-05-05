@@ -61,52 +61,46 @@ class QueryController extends Controller
         $query = new Query;
 
         if (isset(Yii::$app->request->post()['Query'])) {
-            $requestData = Yii::$app->request->post()['Query'];
-            $requestData['start'] = Custom::dateFormat($requestData['start'], 'knmi');
-            $requestData['end'] = Custom::dateFormat($requestData['end'], 'knmi');
-            $requestData['vars'] = join(':', $requestData['vars']);
-            $requestData['stns'] = join(':', $requestData['stns']);
+            $request = Yii::$app->request->post()['Query'];
+            $request['start'] = Custom::dateFormat($request['start'], 'knmi');
+            $request['end'] = Custom::dateFormat($request['end'], 'knmi');
 
-            return $this->actionSubmit($requestData);
+            return $this->actionSubmit($request);
         }
 
         return $this->render('create', ['query' => $query]);
     }
 
-    public function actionSubmit(array $requestData)
+    public function actionSubmit(array $request)
     {
         $url = 'http://projects.knmi.nl/klimatologie/daggegevens/getdata_dag.cgi';
         $timestamp = date('YmdHis');
+        $request['timestamp'] = $timestamp;
         $outputFile = $this->getFileName($timestamp);
         $client = new Client();
 
-        try {
-            $response = $client->post(
-                $url,
-                [
-                    'form_params' => $requestData,
-                    'sink' => $outputFile,
-                ]
-            );
+        $response = $client->post(
+            $url,
+            [
+                'form_params' => $request,
+                'sink' => $outputFile,
+            ]
+        );
 
-            return $this->actionLoading($timestamp);
-        } catch (RequestException $e) {
-            echo $e->getRequest();
-            if ($e->hasResponse()) {
-                echo $e->getResponse();
-            }
-        }
+        return $this->actionLoading($request);
     }
 
-    public function actionLoading($timestamp)
+    public function actionLoading($request)
     {
-        $outputfile = $this->getFileName($timestamp);
+        $timestamp = $request['timestamp'];
+        $outputFile = $this->getFileName($timestamp);
 
-        return $this->render('loading', compact('timestamp', 'outputFile'));
+        return $this->render('loading', compact('request'));
     }
 
-    public function actionResult($timestamp)
+    public function actionResult(array $request)
     {
+        $timestamp = $request['timestamp'];
         $inputFile = $this->getFileName($timestamp);
         $handle = fopen($inputFile, 'r');
 
@@ -114,7 +108,7 @@ class QueryController extends Controller
         $xlsxData = [];
         while (($line = fgetcsv($handle)) !== false) {
             if (count($line) === 3 && (substr($line[0], 0, 1) !== '#')) {
-                $xlsxDateTime = $line[1];
+                $xlsxDateTime = Yii::$app->formatter->asDate(strtotime($line[1]));
                 $csvDateTime = strtotime($line[1]) * 1000;
                 $temp = preg_replace('/\s+/', '', $line[2]);
                 $csvData[] = [
@@ -131,6 +125,8 @@ class QueryController extends Controller
         $outputFileName = '../output/' . $timestamp . '.xlsx';
         (new XlsxHelper())->create($outputFileName, $xlsxData);
 
-        return $this->render('result', compact('csvData'));
+        return $this->render('result', compact('request', 'csvData'));
     }
+
+
 }
