@@ -10,10 +10,10 @@
             var chart = new CanvasJS.Chart("chartContainer", {
                 animationEnabled: true,
                 title:{
-                    text: '<?php echo \app\models\Query::getVarLabels()[$request['vars']] . ' in ' .  \app\models\Query::getStns()[$request['stns']]?>'
+                    text: '<?php echo \app\models\Query::getVars()[$request['vars']] . ' in ' .  \app\models\Query::getStns()[$request['stns']]?>'
                 },
                 axisY: {
-                    title: "0.1 Celsius",
+                    title: '<?php echo \app\models\Query::getVarLabels()[$request['vars']] ?>;',
                     valueFormatString: "#0.",
                     suffix: ""
                 },
